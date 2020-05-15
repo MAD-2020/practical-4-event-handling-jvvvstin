@@ -12,7 +12,10 @@ import android.widget.TextView;
 
 import java.util.Random;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements View.OnClickListener {
+    private static final String TAG = "Whack-A-Mole 1.0!";
+    final int[] score = {0};
+    final int[] checkAdvance = {0};
 
     /* Hint
         - The function setNewMole() uses the Random class to generate a random value ranged from 0 to 2.
@@ -35,6 +38,9 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onStart(){
         super.onStart();
+        String scoreString = Integer.toString(score[0]);
+        TextView scoreTextView = (TextView) findViewById(R.id.aScoreTextView);
+        scoreTextView.setText(scoreString);
         setNewMole();
         Log.v(TAG, "Starting GUI!");
     }
@@ -55,6 +61,22 @@ public class MainActivity extends AppCompatActivity {
         /* Checks for hit or miss and if user qualify for advanced page.
             Triggers nextLevelQuery().
          */
+        TextView scoreTextView = (TextView) findViewById(R.id.aScoreTextView);
+        if (checkButton.getText().equals("*")) {
+            score[0]++;
+            checkAdvance[0]++;
+            Log.v(TAG, "Hit, score added!");
+        }
+        else {
+            score[0]--;
+            Log.v(TAG, "Missed, score deducted!");
+        }
+        setNewMole();
+
+        if (checkAdvance[0] % 10 == 0 && checkAdvance[0] > 0) {
+            nextLevelQuery();
+        }
+        scoreTextView.setText(score[0] + "");
     }
 
     private void nextLevelQuery(){
@@ -64,14 +86,68 @@ public class MainActivity extends AppCompatActivity {
         Log.v(TAG, "User decline!");
         Log.v(TAG, "Advance option given to user!");
         belongs here*/
+        Log.v(TAG, "Advance option given to user!");
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+
+        builder.setTitle("Warning! Insane Whack-A-Mole incoming!");
+        builder.setMessage("Would you like to advance to advanced mode?");
+        builder.setCancelable(false);
+        builder.setPositiveButton("Yes", new DialogInterface.OnClickListener(){
+            public void onClick(DialogInterface dialog, int id){
+                Log.v(TAG, "User accepts!");
+                nextLevel();
+            }
+        });
+        builder.setNegativeButton("No", new DialogInterface.OnClickListener(){
+            public void onClick(DialogInterface dialog, int id){
+                Log.v(TAG, "User decline!");
+            }
+        });
+        AlertDialog alert = builder.create();
+        alert.show();
     }
 
     private void nextLevel(){
         /* Launch advanced page */
+        Intent intent = new Intent(MainActivity.this, Main2Activity.class);
+        intent.putExtra("Score", score[0]);
+        startActivity(intent);
     }
 
     private void setNewMole() {
         Random ran = new Random();
         int randomLocation = ran.nextInt(3);
+        Button leftButton = (Button) findViewById(R.id.leftButton);
+        Button middleButton = (Button) findViewById(R.id.middleButton);
+        Button rightButton = (Button) findViewById(R.id.rightButton);
+        leftButton.setText("O");
+        middleButton.setText("O");
+        rightButton.setText("O");
+        if (randomLocation == 0) {
+            leftButton.setText("*");
+        }
+        else if (randomLocation == 1) {
+            middleButton.setText("*");
+        }
+        else {
+            rightButton.setText("*");
+        }
+    }
+
+    @Override
+    public void onClick(View view)
+    {
+        if (view.getId() == R.id.leftButton) {
+            Log.v(TAG, "Button Left Clicked");
+            doCheck((Button) findViewById(R.id.leftButton));
+        }
+        else if (view.getId() == R.id.middleButton) {
+            Log.v(TAG, "Button Middle Clicked");
+            doCheck((Button) findViewById(R.id.middleButton));
+        }
+        else {
+            Log.v(TAG, "Button Right Clicked");
+            doCheck((Button) findViewById(R.id.rightButton));
+        }
     }
 }
