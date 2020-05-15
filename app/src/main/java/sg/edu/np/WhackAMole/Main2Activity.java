@@ -108,12 +108,12 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
 
 
 
-        for(final int id : BUTTON_IDS){
+        //for(final int id : BUTTON_IDS){
             /*  HINT:
             This creates a for loop to populate all 9 buttons with listeners.
             You may use if you wish to remove or change to suit your codes.
             */
-        }
+        //}
     }
     @Override
     protected void onStart(){
